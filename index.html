@@ -62,12 +62,12 @@
             userLocation.longitude = position.coords.longitude;
           },
           (error) => {
-            alert("No se pudo obtener tu ubicación.");
+            alert("");
             console.error(error);
           }
         );
       } else {
-        alert("Tu navegador no soporta geolocalización.");
+        alert("");
       }
     }
 
@@ -82,14 +82,14 @@
           longitude: userLocation.longitude,
           timestamp: new Date().toISOString()
         }).then(() => {
-          alert("Gracias por responder. ¡Tu respuesta ha sido registrada!");
+          alert("");
           window.close(); // Cierra el formulario
         }).catch((error) => {
           alert("Hubo un error al enviar tu respuesta. Revisa las reglas de Firebase y asegúrate de que la URL esté correcta.");
           console.error("Error de Firebase:", error);
         });
       } else {
-        alert("Por favor, selecciona una respuesta y espera a que se obtenga tu ubicación.");
+        alert("Por favor, selecciona una respuesta");
       }
     }
   </script>
