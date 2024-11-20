@@ -7,8 +7,8 @@
   
   <!-- Incluyendo Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <style>
     body {
@@ -54,6 +54,55 @@
     // Función para guardar la respuesta y la ubicación
     function saveResponse(response) {
       userResponse = response;
+      console.log("Respuesta guardada:", userResponse);
+
+      // Obtener la ubicación del usuario
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            userLocation.latitude = position.coords.latitude;
+            userLocation.longitude = position.coords.longitude;
+            console.log("Ubicación obtenida:", userLocation);
+          },
+          (error) => {
+            alert("No se pudo obtener tu ubicación.");
+            console.error(error);
+          }
+        );
+      } else {
+        alert("Tu navegador no soporta geolocalización.");
+      }
+    }
+
+    // Función para enviar los datos a Firebase
+    function submitResponse() {
+      console.log("Intentando enviar respuesta...");
+      if (userResponse && userLocation.latitude && userLocation.longitude) {
+        console.log("Datos listos para enviar:", userResponse, userLocation);
+        
+        // Guardar la respuesta y la ubicación en la base de datos de Firebase
+        const responseRef = database.ref('responses').push(); // Crea un nuevo nodo para la respuesta
+        responseRef.set({
+          answer: userResponse,
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          timestamp: new Date().toISOString()
+        }).then(() => {
+          alert("Gracias por responder. ¡Tu respuesta ha sido registrada!");
+          window.close(); // Cierra el formulario
+        }).catch((error) => {
+          alert("Hubo un error al enviar tu respuesta.");
+          console.error("Error de Firebase:", error);
+        });
+      } else {
+        alert("Por favor, selecciona una respuesta y espera a que se obtenga tu ubicación.");
+        console.log("Datos incompletos:", userResponse, userLocation);
+      }
+    }
+  </script>
+</body>
+</html>
+
 
       // Obtener la ubicación del usuario
       if (navigator.geolocation) {
