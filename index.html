@@ -30,7 +30,7 @@
   <button id="btnNo" onclick="saveResponse('No')">No</button>
   
   <!-- Botón para enviar respuesta -->
-  <button id="btnSubmit" onclick="submitResponse()">Enviar</button>
+  <button id="btnSubmit" onclick="submitResponse()" disabled>Enviar</button>
   
   <script>
     // Configuración de Firebase (Reemplaza estos valores con los de tu proyecto Firebase)
@@ -63,6 +63,8 @@
             userLocation.latitude = position.coords.latitude;
             userLocation.longitude = position.coords.longitude;
             console.log("Ubicación obtenida:", userLocation);
+            // Habilitar el botón de enviar solo después de obtener la ubicación
+            document.getElementById('btnSubmit').disabled = false;
           },
           (error) => {
             alert("No se pudo obtener tu ubicación.");
