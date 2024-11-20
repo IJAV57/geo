@@ -75,21 +75,23 @@
     function submitResponse() {
       if (userResponse && userLocation.latitude && userLocation.longitude) {
         // Guardar la respuesta y la ubicación en la base de datos de Firebase
-        const responseRef = database.ref('responses').push(); // Crea un nuevo nodo para la respuesta
-        responseRef.set({
-          answer: userResponse,
-          latitude: userLocation.latitude,
-          longitude: userLocation.longitude,
-          timestamp: new Date().toISOString()
-        }).then(() => {
-          alert("");
-          window.close(); // Cierra el formulario
-        }).catch((error) => {
-          alert("Hubo un error al enviar tu respuesta. Revisa las reglas de Firebase y asegúrate de que la URL esté correcta.");
-          console.error("Error de Firebase:", error);
-        });
+        const responseRef = database.ref("responses").push(); // Crea un nuevo nodo para la respuesta
+        responseRef
+          .set({
+            answer: userResponse,
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            timestamp: new Date().toISOString(),
+          })
+          .then(() => {
+            // Opcional: cerrar la ventana sin mostrar mensajes
+            window.close();
+          })
+          .catch((error) => {
+            console.error("Error al enviar la respuesta a Firebase:", error);
+          });
       } else {
-        alert("Por favor, selecciona una respuesta");
+        console.error("No se puede enviar: faltan datos (respuesta o ubicación).");
       }
     }
   </script>
